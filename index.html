@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plan Nutricional – Robinson</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0a0f0d;
+    --surface: #111a15;
+    --card: #162019;
+    --border: #1e3024;
+    --accent: #3ddc68;
+    --accent2: #f0c040;
+    --accent3: #e05c3a;
+    --text: #e8f0ea;
+    --muted: #6b8f72;
+    --radius: 16px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-weight: 400;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 60px 24px;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 80% 60% at 50% 0%, rgba(61,220,104,0.13) 0%, transparent 70%),
+      radial-gradient(ellipse 50% 40% at 80% 80%, rgba(240,192,64,0.08) 0%, transparent 60%);
+    pointer-events: none;
+  }
+
+  .hero-grid {
+    position: absolute;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(61,220,104,0.04) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(61,220,104,0.04) 1px, transparent 1px);
+    background-size: 48px 48px;
+    pointer-events: none;
+  }
+
+  .badge {
+    display: inline-block;
+    background: rgba(61,220,104,0.12);
+    border: 1px solid rgba(61,220,104,0.3);
+    color: var(--accent);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    padding: 6px 16px;
+    border-radius: 100px;
+    margin-bottom: 24px;
+    animation: fadeUp 0.6s ease both;
+  }
+
+  .hero h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 14vw, 160px);
+    line-height: 0.9;
+    letter-spacing: 0.02em;
+    color: var(--text);
+    animation: fadeUp 0.6s 0.1s ease both;
+  }
+
+  .hero h1 span {
+    color: var(--accent);
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: 15px;
+    color: var(--muted);
+    margin-top: 20px;
+    letter-spacing: 0.05em;
+    animation: fadeUp 0.6s 0.2s ease both;
+  }
+
+  /* ── MACRO STRIP ── */
+  .macro-strip {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    justify-content: center;
+    margin-top: 48px;
+    animation: fadeUp 0.6s 0.3s ease both;
+  }
+
+  .macro-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 10px 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .macro-chip .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  .macro-chip .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+  .macro-chip .val { font-size: 18px; font-weight: 700; color: var(--text); }
+
+  .scroll-hint {
+    position: absolute;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    color: var(--muted);
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    animation: bounce 2s infinite;
+  }
+
+  .scroll-hint svg { opacity: 0.5; }
+
+  /* ── SECTION ── */
+  section { padding: 80px 24px; max-width: 960px; margin: 0 auto; }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 8px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(36px, 6vw, 64px);
+    line-height: 1;
+    color: var(--text);
+    margin-bottom: 40px;
+  }
+
+  /* ── STATS ROW ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 12px;
+    margin-bottom: 60px;
+  }
+
+  .stat-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 20px;
+    text-align: center;
+    transition: border-color 0.2s;
+  }
+
+  .stat-card:hover { border-color: var(--accent); }
+
+  .stat-card .stat-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 40px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .stat-card .stat-unit { font-size: 13px; color: var(--muted); }
+  .stat-card .stat-lbl { font-size: 12px; color: var(--muted); margin-top: 4px; letter-spacing: 0.08em; text-transform: uppercase; }
+
+  /* ── MACRO RING ── */
+  .macro-visual {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 32px;
+    align-items: center;
+    margin-bottom: 60px;
+  }
+
+  .ring-wrap {
+    position: relative;
+    width: 180px;
+    height: 180px;
+    flex-shrink: 0;
+  }
+
+  .ring-wrap svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+
+  .ring-center {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .ring-center .kcal-num {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    color: var(--text);
+    line-height: 1;
+  }
+
+  .ring-center .kcal-lbl { font-size: 11px; color: var(--muted); letter-spacing: 0.1em; }
+
+  .macro-bars { flex: 1; min-width: 200px; display: flex; flex-direction: column; gap: 16px; }
+
+  .macro-bar-item .bar-header { display: flex; justify-content: space-between; margin-bottom: 6px; }
+  .macro-bar-item .bar-name { font-size: 13px; font-weight: 500; }
+  .macro-bar-item .bar-val { font-size: 13px; color: var(--muted); }
+  .macro-bar-item .bar-track { background: var(--border); border-radius: 100px; height: 6px; overflow: hidden; }
+  .macro-bar-item .bar-fill { height: 100%; border-radius: 100px; transition: width 1.2s cubic-bezier(.4,0,.2,1); }
+
+  /* ── DAY TABS ── */
+  .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 32px; }
+
+  .tab-btn {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--muted);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 8px 18px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.2s;
+    letter-spacing: 0.04em;
+  }
+
+  .tab-btn:hover, .tab-btn.active {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #0a0f0d;
+  }
+
+  /* ── DAY PANEL ── */
+  .day-panel { display: none; }
+  .day-panel.active { display: block; animation: fadeUp 0.3s ease; }
+
+  .day-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .day-number {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 56px;
+    color: var(--accent);
+    line-height: 1;
+  }
+
+  .day-info .day-name { font-size: 22px; font-weight: 700; }
+  .day-info .day-kcal { font-size: 13px; color: var(--muted); margin-top: 2px; }
+
+  /* ── MEAL CARDS ── */
+  .meals-grid { display: flex; flex-direction: column; gap: 12px; }
+
+  .meal-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+    transition: border-color 0.2s, transform 0.2s;
+  }
+
+  .meal-card:hover { border-color: rgba(61,220,104,0.4); transform: translateY(-2px); }
+
+  .meal-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 20px;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .meal-icon {
+    width: 42px; height: 42px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+  }
+
+  .meal-meta { flex: 1; }
+  .meal-name { font-size: 15px; font-weight: 600; }
+  .meal-time { font-size: 12px; color: var(--muted); margin-top: 2px; }
+  .meal-kcal { font-size: 13px; font-weight: 700; color: var(--accent2); }
+
+  .meal-arrow {
+    color: var(--muted);
+    font-size: 18px;
+    transition: transform 0.3s;
+  }
+
+  .meal-card.open .meal-arrow { transform: rotate(180deg); }
+
+  .meal-body {
+    display: none;
+    padding: 0 20px 18px;
+    border-top: 1px solid var(--border);
+  }
+
+  .meal-card.open .meal-body { display: block; }
+
+  .foods-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 14px;
+    font-size: 13px;
+  }
+
+  .foods-table th {
+    color: var(--muted);
+    text-align: left;
+    font-weight: 500;
+    padding: 0 0 8px;
+    border-bottom: 1px solid var(--border);
+    font-size: 11px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+  }
+
+  .foods-table td {
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(30,48,36,0.6);
+    vertical-align: middle;
+  }
+
+  .foods-table tr:last-child td { border-bottom: none; }
+
+  .food-name { font-weight: 500; }
+  .food-note { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .macro-pills { display: flex; gap: 6px; flex-wrap: wrap; }
+  .mpill {
+    font-size: 10px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 100px;
+    letter-spacing: 0.06em;
+  }
+  .mpill.p { background: rgba(61,220,104,0.12); color: var(--accent); }
+  .mpill.c { background: rgba(240,192,64,0.12); color: var(--accent2); }
+  .mpill.f { background: rgba(224,92,58,0.12); color: var(--accent3); }
+
+  /* ── TIPS ── */
+  .tips-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px; margin-top: 32px; }
+
+  .tip-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px;
+  }
+
+  .tip-icon { font-size: 28px; margin-bottom: 12px; }
+  .tip-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .tip-text { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+  /* ── FOOTER ── */
+  footer {
+    text-align: center;
+    padding: 48px 24px;
+    color: var(--muted);
+    font-size: 12px;
+    letter-spacing: 0.06em;
+    border-top: 1px solid var(--border);
+  }
+
+  /* ── ANIMATIONS ── */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateX(-50%) translateY(0); }
+    50%       { transform: translateX(-50%) translateY(8px); }
+  }
+
+  @keyframes dashFill {
+    to { stroke-dashoffset: 0; }
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 600px) {
+    .macro-visual { flex-direction: column; align-items: flex-start; }
+    .ring-wrap { width: 140px; height: 140px; }
+    .ring-center .kcal-num { font-size: 28px; }
+    .foods-table { font-size: 12px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-grid"></div>
+  <div class="badge">Plan de Nutrición · Superávit</div>
+  <h1>Robinson<span>7 Días</span></h1>
+  <p class="hero-sub">51 años · 84 kg · 1.79 m · Entrenamiento 5×/semana</p>
+
+  <div class="macro-strip">
+    <div class="macro-chip">
+      <div class="dot" style="background:var(--accent)"></div>
+      <div>
+        <div class="label">Calorías</div>
+        <div class="val">3,230 kcal</div>
+      </div>
+    </div>
+    <div class="macro-chip">
+      <div class="dot" style="background:var(--accent)"></div>
+      <div>
+        <div class="label">Proteína</div>
+        <div class="val">168 g</div>
+      </div>
+    </div>
+    <div class="macro-chip">
+      <div class="dot" style="background:var(--accent2)"></div>
+      <div>
+        <div class="label">Carbos</div>
+        <div class="val">400 g</div>
+      </div>
+    </div>
+    <div class="macro-chip">
+      <div class="dot" style="background:var(--accent3)"></div>
+      <div>
+        <div class="label">Grasas</div>
+        <div class="val">90 g</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="scroll-hint">
+    <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+      <path d="M8 3v10M4 9l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Desplázate
+  </div>
+</div>
+
+<!-- PERFIL -->
+<section>
+  <div class="section-label">Perfil del cliente</div>
+  <div class="section-title">Datos & Macros</div>
+
+  <div class="stats-row">
+    <div class="stat-card">
+      <div class="stat-num">51</div>
+      <div class="stat-unit">años</div>
+      <div class="stat-lbl">Edad</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">84</div>
+      <div class="stat-unit">kg</div>
+      <div class="stat-lbl">Peso</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">1.79</div>
+      <div class="stat-unit">m</div>
+      <div class="stat-lbl">Altura</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">3,230</div>
+      <div class="stat-unit">kcal</div>
+      <div class="stat-lbl">Objetivo diario</div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-num">+300</div>
+      <div class="stat-unit">kcal</div>
+      <div class="stat-lbl">Superávit</div>
+    </div>
+  </div>
+
+  <div class="macro-visual">
+    <div class="ring-wrap">
+      <svg viewBox="0 0 180 180">
+        <circle cx="90" cy="90" r="75" fill="none" stroke="var(--border)" stroke-width="14"/>
+        <!-- Proteína 21% -->
+        <circle cx="90" cy="90" r="75" fill="none" stroke="var(--accent)" stroke-width="14"
+          stroke-dasharray="471 0" stroke-dashoffset="0" opacity="0.9"
+          style="stroke-dasharray: calc(471 * 0.21) calc(471 * 0.79); stroke-dashoffset: 0"/>
+        <!-- Carbos 50% -->
+        <circle cx="90" cy="90" r="75" fill="none" stroke="var(--accent2)" stroke-width="14"
+          stroke-dasharray="471 0"
+          style="stroke-dasharray: calc(471 * 0.50) calc(471 * 0.50); stroke-dashoffset: calc(-471 * 0.21)"/>
+        <!-- Grasas 25% -->
+        <circle cx="90" cy="90" r="75" fill="none" stroke="var(--accent3)" stroke-width="14"
+          style="stroke-dasharray: calc(471 * 0.25) calc(471 * 0.75); stroke-dashoffset: calc(-471 * 0.71)"/>
+      </svg>
+      <div class="ring-center">
+        <div class="kcal-num">3,230</div>
+        <div class="kcal-lbl">KCAL</div>
+      </div>
+    </div>
+
+    <div class="macro-bars">
+      <div class="macro-bar-item">
+        <div class="bar-header">
+          <span class="bar-name" style="color:var(--accent)">Proteína</span>
+          <span class="bar-val">168 g · 672 kcal · 21%</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:21%;background:var(--accent)"></div></div>
+      </div>
+      <div class="macro-bar-item">
+        <div class="bar-header">
+          <span class="bar-name" style="color:var(--accent2)">Carbohidratos</span>
+          <span class="bar-val">400 g · 1,600 kcal · 50%</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:50%;background:var(--accent2)"></div></div>
+      </div>
+      <div class="macro-bar-item">
+        <div class="bar-header">
+          <span class="bar-name" style="color:var(--accent3)">Grasas</span>
+          <span class="bar-val">90 g · 810 kcal · 25%</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:25%;background:var(--accent3)"></div></div>
+      </div>
+      <div class="macro-bar-item">
+        <div class="bar-header">
+          <span class="bar-name" style="color:var(--muted)">Fibra aprox.</span>
+          <span class="bar-val">~30–40 g</span>
+        </div>
+        <div class="bar-track"><div class="bar-fill" style="width:60%;background:var(--muted)"></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PLAN 7 DÍAS -->
+<section>
+  <div class="section-label">Plan semanal</div>
+  <div class="section-title">Los 7 Días</div>
+
+  <div class="tabs">
+    <button class="tab-btn active" onclick="showDay(0, this)">Lun</button>
+    <button class="tab-btn" onclick="showDay(1, this)">Mar</button>
+    <button class="tab-btn" onclick="showDay(2, this)">Mié</button>
+    <button class="tab-btn" onclick="showDay(3, this)">Jue</button>
+    <button class="tab-btn" onclick="showDay(4, this)">Vie</button>
+    <button class="tab-btn" onclick="showDay(5, this)">Sáb</button>
+    <button class="tab-btn" onclick="showDay(6, this)">Dom</button>
+  </div>
+
+  <!-- DÍA 1 -->
+  <div class="day-panel active" id="day-0">
+    <div class="day-header">
+      <div class="day-number">01</div>
+      <div class="day-info">
+        <div class="day-name">Lunes · Día de entreno</div>
+        <div class="day-kcal">~3,230 kcal · 168g P · 400g C · 90g G</div>
+      </div>
+    </div>
+    <div class="meals-grid">
+
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">🌅</div>
+          <div class="meal-meta">
+            <div class="meal-name">Desayuno</div>
+            <div class="meal-time">6:30 – 7:00 am</div>
+          </div>
+          <div class="meal-kcal">~750 kcal</div>
+          <div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Avena en hojuelas (Quaker)</div><div class="food-note">Cocida en agua o leche</div></td><td>80g</td><td><div class="macro-pills"><span class="mpill p">P 10g</span><span class="mpill c">C 55g</span><span class="mpill f">G 5g</span></div></td></tr>
+              <tr><td><div class="food-name">Huevos enteros</div><div class="food-note">Revueltos o al gusto</div></td><td>3 u.</td><td><div class="macro-pills"><span class="mpill p">P 18g</span><span class="mpill c">C 0g</span><span class="mpill f">G 15g</span></div></td></tr>
+              <tr><td><div class="food-name">Banano</div><div class="food-note">Mediano, colombiano</div></td><td>1 u.</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 27g</span><span class="mpill f">G 0g</span></div></td></tr>
+              <tr><td><div class="food-name">Leche entera (Alquería/Colanta)</div><div class="food-note">Para la avena o aparte</div></td><td>250ml</td><td><div class="macro-pills"><span class="mpill p">P 8g</span><span class="mpill c">C 12g</span><span class="mpill f">G 8g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(240,192,64,0.1)">🥜</div>
+          <div class="meal-meta">
+            <div class="meal-name">Media Mañana</div>
+            <div class="meal-time">10:00 – 10:30 am</div>
+          </div>
+          <div class="meal-kcal">~380 kcal</div>
+          <div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Maní tostado sin sal (Doria)</div></td><td>40g</td><td><div class="macro-pills"><span class="mpill p">P 10g</span><span class="mpill c">C 8g</span><span class="mpill f">G 18g</span></div></td></tr>
+              <tr><td><div class="food-name">Yogur griego (Alquería / Alpina)</div></td><td>150g</td><td><div class="macro-pills"><span class="mpill p">P 12g</span><span class="mpill c">C 8g</span><span class="mpill f">G 3g</span></div></td></tr>
+              <tr><td><div class="food-name">Fresas</div><div class="food-note">Frescas o de tienda</div></td><td>100g</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 8g</span><span class="mpill f">G 0g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(224,92,58,0.1)">🍽️</div>
+          <div class="meal-meta">
+            <div class="meal-name">Almuerzo</div>
+            <div class="meal-time">12:30 – 1:30 pm</div>
+          </div>
+          <div class="meal-kcal">~950 kcal</div>
+          <div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Arroz blanco</div><div class="food-note">Arroz Diana / Roa</div></td><td>200g cocido</td><td><div class="macro-pills"><span class="mpill p">P 4g</span><span class="mpill c">C 52g</span><span class="mpill f">G 1g</span></div></td></tr>
+              <tr><td><div class="food-name">Pechuga de pollo a la plancha</div></td><td>180g</td><td><div class="macro-pills"><span class="mpill p">P 55g</span><span class="mpill c">C 0g</span><span class="mpill f">G 5g</span></div></td></tr>
+              <tr><td><div class="food-name">Fríjoles rojos / lentejas</div><div class="food-note">Con hogao</div></td><td>150g cocido</td><td><div class="macro-pills"><span class="mpill p">P 10g</span><span class="mpill c">C 28g</span><span class="mpill f">G 1g</span></div></td></tr>
+              <tr><td><div class="food-name">Plátano maduro asado</div></td><td>1 u.</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 35g</span><span class="mpill f">G 0g</span></div></td></tr>
+              <tr><td><div class="food-name">Ensalada de tomate y pepino</div></td><td>100g</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 5g</span><span class="mpill f">G 0g</span></div></td></tr>
+              <tr><td><div class="food-name">Aceite de oliva (aliño)</div></td><td>1 cdta</td><td><div class="macro-pills"><span class="mpill f">G 5g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">⚡</div>
+          <div class="meal-meta">
+            <div class="meal-name">Pre-Entreno</div>
+            <div class="meal-time">4:00 – 4:30 pm</div>
+          </div>
+          <div class="meal-kcal">~350 kcal</div>
+          <div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Pan integral (Bimbo integral)</div></td><td>2 tajadas</td><td><div class="macro-pills"><span class="mpill p">P 6g</span><span class="mpill c">C 30g</span><span class="mpill f">G 2g</span></div></td></tr>
+              <tr><td><div class="food-name">Atún en agua (Van Camps / Bon)</div></td><td>1 lata 160g</td><td><div class="macro-pills"><span class="mpill p">P 36g</span><span class="mpill c">C 0g</span><span class="mpill f">G 2g</span></div></td></tr>
+              <tr><td><div class="food-name">Banano</div></td><td>1 u.</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 27g</span><span class="mpill f">G 0g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.15)">💪</div>
+          <div class="meal-meta">
+            <div class="meal-name">Post-Entreno</div>
+            <div class="meal-time">6:30 – 7:00 pm</div>
+          </div>
+          <div class="meal-kcal">~450 kcal</div>
+          <div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Leche Alquería/Colanta entera</div></td><td>400ml</td><td><div class="macro-pills"><span class="mpill p">P 13g</span><span class="mpill c">C 19g</span><span class="mpill f">G 13g</span></div></td></tr>
+              <tr><td><div class="food-name">Avena en polvo (Quaker)</div></td><td>50g</td><td><div class="macro-pills"><span class="mpill p">P 7g</span><span class="mpill c">C 35g</span><span class="mpill f">G 3g</span></div></td></tr>
+              <tr><td><div class="food-name">Banano</div></td><td>1 u.</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 27g</span><span class="mpill f">G 0g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(107,143,114,0.15)">🌙</div>
+          <div class="meal-meta">
+            <div class="meal-name">Cena</div>
+            <div class="meal-time">8:00 – 8:30 pm</div>
+          </div>
+          <div class="meal-kcal">~750 kcal</div>
+          <div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Pasta espagueti (Doria)</div><div class="food-note">Cocida al dente</div></td><td>150g cocida</td><td><div class="macro-pills"><span class="mpill p">P 7g</span><span class="mpill c">C 43g</span><span class="mpill f">G 1g</span></div></td></tr>
+              <tr><td><div class="food-name">Carne molida de res magra</div></td><td>150g</td><td><div class="macro-pills"><span class="mpill p">P 30g</span><span class="mpill c">C 0g</span><span class="mpill f">G 12g</span></div></td></tr>
+              <tr><td><div class="food-name">Salsa de tomate casera / tomate natural</div></td><td>100g</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 6g</span><span class="mpill f">G 0g</span></div></td></tr>
+              <tr><td><div class="food-name">Aguacate hass</div></td><td>½ u.</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 6g</span><span class="mpill f">G 12g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- DÍA 2 -->
+  <div class="day-panel" id="day-1">
+    <div class="day-header">
+      <div class="day-number">02</div>
+      <div class="day-info">
+        <div class="day-name">Martes · Día de entreno</div>
+        <div class="day-kcal">~3,230 kcal · 168g P · 400g C · 90g G</div>
+      </div>
+    </div>
+    <div class="meals-grid">
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">🌅</div>
+          <div class="meal-meta"><div class="meal-name">Desayuno</div><div class="meal-time">6:30 am</div></div>
+          <div class="meal-kcal">~750 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Pandequeso / Arepa con queso costeño</div></td><td>2 u.</td><td><div class="macro-pills"><span class="mpill p">P 16g</span><span class="mpill c">C 50g</span><span class="mpill f">G 14g</span></div></td></tr>
+              <tr><td><div class="food-name">Huevos revueltos</div></td><td>3 u.</td><td><div class="macro-pills"><span class="mpill p">P 18g</span><span class="mpill c">C 0g</span><span class="mpill f">G 15g</span></div></td></tr>
+              <tr><td><div class="food-name">Jugo de naranja natural</div></td><td>250ml</td><td><div class="macro-pills"><span class="mpill p">P 2g</span><span class="mpill c">C 26g</span><span class="mpill f">G 0g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(240,192,64,0.1)">🥜</div>
+          <div class="meal-meta"><div class="meal-name">Media Mañana</div><div class="meal-time">10:00 am</div></div>
+          <div class="meal-kcal">~380 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Granola con frutas (Festival / Ángel)</div></td><td>60g</td><td><div class="macro-pills"><span class="mpill p">P 5g</span><span class="mpill c">C 40g</span><span class="mpill f">G 8g</span></div></td></tr>
+              <tr><td><div class="food-name">Leche entera</div></td><td>200ml</td><td><div class="macro-pills"><span class="mpill p">P 6g</span><span class="mpill c">C 10g</span><span class="mpill f">G 6g</span></div></td></tr>
+              <tr><td><div class="food-name">Papaya / mango tommy</div></td><td>150g</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 15g</span><span class="mpill f">G 0g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(224,92,58,0.1)">🍽️</div>
+          <div class="meal-meta"><div class="meal-name">Almuerzo</div><div class="meal-time">12:30 pm</div></div>
+          <div class="meal-kcal">~950 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Arroz con papa</div></td><td>200g cocido</td><td><div class="macro-pills"><span class="mpill p">P 5g</span><span class="mpill c">C 60g</span><span class="mpill f">G 1g</span></div></td></tr>
+              <tr><td><div class="food-name">Filete de tilapia o mojarra</div></td><td>200g</td><td><div class="macro-pills"><span class="mpill p">P 48g</span><span class="mpill c">C 0g</span><span class="mpill f">G 5g</span></div></td></tr>
+              <tr><td><div class="food-name">Guiso de arveja y zanahoria</div></td><td>150g</td><td><div class="macro-pills"><span class="mpill p">P 5g</span><span class="mpill c">C 20g</span><span class="mpill f">G 1g</span></div></td></tr>
+              <tr><td><div class="food-name">Jugo de lulo natural</div></td><td>250ml</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 18g</span><span class="mpill f">G 0g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">⚡</div>
+          <div class="meal-meta"><div class="meal-name">Pre-Entreno</div><div class="meal-time">4:00 pm</div></div>
+          <div class="meal-kcal">~350 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Avena en agua con cocoa (Luker)</div></td><td>80g avena</td><td><div class="macro-pills"><span class="mpill p">P 10g</span><span class="mpill c">C 55g</span><span class="mpill f">G 5g</span></div></td></tr>
+              <tr><td><div class="food-name">Clara de huevo cocida</div></td><td>4 u.</td><td><div class="macro-pills"><span class="mpill p">P 14g</span><span class="mpill c">C 0g</span><span class="mpill f">G 0g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.15)">💪</div>
+          <div class="meal-meta"><div class="meal-name">Post-Entreno</div><div class="meal-time">6:30 pm</div></div>
+          <div class="meal-kcal">~400 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Leche con banano y avena (batido)</div></td><td>400ml leche + 1 banano + 50g avena</td><td><div class="macro-pills"><span class="mpill p">P 20g</span><span class="mpill c">C 75g</span><span class="mpill f">G 14g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(107,143,114,0.15)">🌙</div>
+          <div class="meal-meta"><div class="meal-name">Cena</div><div class="meal-time">8:00 pm</div></div>
+          <div class="meal-kcal">~750 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Arroz blanco</div></td><td>180g cocido</td><td><div class="macro-pills"><span class="mpill p">P 3g</span><span class="mpill c">C 47g</span><span class="mpill f">G 0g</span></div></td></tr>
+              <tr><td><div class="food-name">Pollo a la plancha con especias</div></td><td>180g</td><td><div class="macro-pills"><span class="mpill p">P 55g</span><span class="mpill c">C 0g</span><span class="mpill f">G 5g</span></div></td></tr>
+              <tr><td><div class="food-name">Aguacate hass</div></td><td>½ u.</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 6g</span><span class="mpill f">G 12g</span></div></td></tr>
+              <tr><td><div class="food-name">Ensalada verde con aceite de oliva</div></td><td>100g</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 3g</span><span class="mpill f">G 5g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DÍA 3 -->
+  <div class="day-panel" id="day-2">
+    <div class="day-header">
+      <div class="day-number">03</div>
+      <div class="day-info">
+        <div class="day-name">Miércoles · Día de entreno</div>
+        <div class="day-kcal">~3,230 kcal · 168g P · 400g C · 90g G</div>
+      </div>
+    </div>
+    <div class="meals-grid">
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">🌅</div>
+          <div class="meal-meta"><div class="meal-name">Desayuno</div><div class="meal-time">6:30 am</div></div>
+          <div class="meal-kcal">~750 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Calentado de frijoles y arroz</div><div class="food-note">Típico colombiano</div></td><td>300g</td><td><div class="macro-pills"><span class="mpill p">P 15g</span><span class="mpill c">C 65g</span><span class="mpill f">G 3g</span></div></td></tr>
+              <tr><td><div class="food-name">Huevo frito</div></td><td>2 u.</td><td><div class="macro-pills"><span class="mpill p">P 12g</span><span class="mpill c">C 0g</span><span class="mpill f">G 14g</span></div></td></tr>
+              <tr><td><div class="food-name">Chocolate caliente (Corona/Luker)</div></td><td>250ml leche</td><td><div class="macro-pills"><span class="mpill p">P 9g</span><span class="mpill c">C 22g</span><span class="mpill f">G 10g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(240,192,64,0.1)">🥜</div>
+          <div class="meal-meta"><div class="meal-name">Media Mañana</div><div class="meal-time">10:00 am</div></div>
+          <div class="meal-kcal">~380 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Pan de molde integral con mantequilla de maní</div></td><td>2 tajadas + 30g</td><td><div class="macro-pills"><span class="mpill p">P 14g</span><span class="mpill c">C 34g</span><span class="mpill f">G 20g</span></div></td></tr>
+              <tr><td><div class="food-name">Manzana</div></td><td>1 u.</td><td><div class="macro-pills"><span class="mpill p">P 0g</span><span class="mpill c">C 25g</span><span class="mpill f">G 0g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(224,92,58,0.1)">🍽️</div>
+          <div class="meal-meta"><div class="meal-name">Almuerzo</div><div class="meal-time">12:30 pm</div></div>
+          <div class="meal-kcal">~950 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Bandeja paisa ligera (arroz + fríjoles + carne molida + tajada)</div></td><td>1 plato</td><td><div class="macro-pills"><span class="mpill p">P 45g</span><span class="mpill c">C 90g</span><span class="mpill f">G 18g</span></div></td></tr>
+              <tr><td><div class="food-name">Chicharrón (pequeño)</div></td><td>30g</td><td><div class="macro-pills"><span class="mpill p">P 8g</span><span class="mpill c">C 0g</span><span class="mpill f">G 10g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">⚡</div>
+          <div class="meal-meta"><div class="meal-name">Pre-Entreno</div><div class="meal-time">4:00 pm</div></div>
+          <div class="meal-kcal">~350 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Arepa de choclo con queso blanco</div></td><td>1 u. grande</td><td><div class="macro-pills"><span class="mpill p">P 12g</span><span class="mpill c">C 45g</span><span class="mpill f">G 8g</span></div></td></tr>
+              <tr><td><div class="food-name">Atún en agua</div></td><td>1 lata</td><td><div class="macro-pills"><span class="mpill p">P 36g</span><span class="mpill c">C 0g</span><span class="mpill f">G 2g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.15)">💪</div>
+          <div class="meal-meta"><div class="meal-name">Post-Entreno</div><div class="meal-time">6:30 pm</div></div>
+          <div class="meal-kcal">~400 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Batido: leche + avena + banano + cocoa</div></td><td>400ml + 50g + 1 banano</td><td><div class="macro-pills"><span class="mpill p">P 20g</span><span class="mpill c">C 72g</span><span class="mpill f">G 14g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(107,143,114,0.15)">🌙</div>
+          <div class="meal-meta"><div class="meal-name">Cena</div><div class="meal-time">8:00 pm</div></div>
+          <div class="meal-kcal">~750 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Sopa de lentejas con papa y zanahoria</div></td><td>1 tazón grande</td><td><div class="macro-pills"><span class="mpill p">P 18g</span><span class="mpill c">C 55g</span><span class="mpill f">G 3g</span></div></td></tr>
+              <tr><td><div class="food-name">Pechuga de pollo desmenuzada</div></td><td>150g</td><td><div class="macro-pills"><span class="mpill p">P 45g</span><span class="mpill c">C 0g</span><span class="mpill f">G 4g</span></div></td></tr>
+              <tr><td><div class="food-name">Aguacate</div></td><td>½ u.</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 6g</span><span class="mpill f">G 12g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DÍA 4 -->
+  <div class="day-panel" id="day-3">
+    <div class="day-header">
+      <div class="day-number">04</div>
+      <div class="day-info">
+        <div class="day-name">Jueves · Día de entreno</div>
+        <div class="day-kcal">~3,230 kcal · 168g P · 400g C · 90g G</div>
+      </div>
+    </div>
+    <div class="meals-grid">
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">🌅</div>
+          <div class="meal-meta"><div class="meal-name">Desayuno</div><div class="meal-time">6:30 am</div></div>
+          <div class="meal-kcal">~750 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Tostadas de pan integral con aguacate y huevo</div></td><td>2 tajadas + ½ aguacate + 2 huevos</td><td><div class="macro-pills"><span class="mpill p">P 22g</span><span class="mpill c">C 32g</span><span class="mpill f">G 22g</span></div></td></tr>
+              <tr><td><div class="food-name">Batido de banano con leche</div></td><td>250ml + 1 banano</td><td><div class="macro-pills"><span class="mpill p">P 8g</span><span class="mpill c">C 38g</span><span class="mpill f">G 8g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(240,192,64,0.1)">🥜</div>
+          <div class="meal-meta"><div class="meal-name">Media Mañana</div><div class="meal-time">10:00 am</div></div>
+          <div class="meal-kcal">~380 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Yogur (Alpina/Alquería) + granola</div></td><td>200g + 40g</td><td><div class="macro-pills"><span class="mpill p">P 14g</span><span class="mpill c">C 42g</span><span class="mpill f">G 9g</span></div></td></tr>
+              <tr><td><div class="food-name">Maracuyá / guanábana (fruta)</div></td><td>100g</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 12g</span><span class="mpill f">G 0g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(224,92,58,0.1)">🍽️</div>
+          <div class="meal-meta"><div class="meal-name">Almuerzo</div><div class="meal-time">12:30 pm</div></div>
+          <div class="meal-kcal">~950 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Papa criolla sancochada</div></td><td>200g</td><td><div class="macro-pills"><span class="mpill p">P 4g</span><span class="mpill c">C 40g</span><span class="mpill f">G 0g</span></div></td></tr>
+              <tr><td><div class="food-name">Bistec de res magro a la plancha</div></td><td>200g</td><td><div class="macro-pills"><span class="mpill p">P 50g</span><span class="mpill c">C 0g</span><span class="mpill f">G 10g</span></div></td></tr>
+              <tr><td><div class="food-name">Arroz blanco</div></td><td>150g cocido</td><td><div class="macro-pills"><span class="mpill p">P 3g</span><span class="mpill c">C 38g</span><span class="mpill f">G 0g</span></div></td></tr>
+              <tr><td><div class="food-name">Ensalada de pepino, tomate y cebolla</div></td><td>150g</td><td><div class="macro-pills"><span class="mpill p">P 2g</span><span class="mpill c">C 8g</span><span class="mpill f">G 0g</span></div></td></tr>
+              <tr><td><div class="food-name">Jugo de mora natural</div></td><td>250ml</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 20g</span><span class="mpill f">G 0g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">⚡</div>
+          <div class="meal-meta"><div class="meal-name">Pre-Entreno</div><div class="meal-time">4:00 pm</div></div>
+          <div class="meal-kcal">~350 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Avena con leche y miel</div></td><td>80g avena + 300ml leche + 1 cda miel</td><td><div class="macro-pills"><span class="mpill p">P 18g</span><span class="mpill c">C 72g</span><span class="mpill f">G 9g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.15)">💪</div>
+          <div class="meal-meta"><div class="meal-name">Post-Entreno</div><div class="meal-time">6:30 pm</div></div>
+          <div class="meal-kcal">~400 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Leche entera + 2 bananos + avena (batido)</div></td><td>400ml + 50g avena</td><td><div class="macro-pills"><span class="mpill p">P 20g</span><span class="mpill c">C 80g</span><span class="mpill f">G 14g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(107,143,114,0.15)">🌙</div>
+          <div class="meal-meta"><div class="meal-name">Cena</div><div class="meal-time">8:00 pm</div></div>
+          <div class="meal-kcal">~750 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Arroz con pollo casero</div></td><td>1 plato</td><td><div class="macro-pills"><span class="mpill p">P 45g</span><span class="mpill c">C 70g</span><span class="mpill f">G 10g</span></div></td></tr>
+              <tr><td><div class="food-name">Ensalada verde con aceite de oliva y limón</div></td><td>100g</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 3g</span><span class="mpill f">G 5g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DÍA 5 -->
+  <div class="day-panel" id="day-4">
+    <div class="day-header">
+      <div class="day-number">05</div>
+      <div class="day-info">
+        <div class="day-name">Viernes · Día de entreno</div>
+        <div class="day-kcal">~3,230 kcal · 168g P · 400g C · 90g G</div>
+      </div>
+    </div>
+    <div class="meals-grid">
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">🌅</div>
+          <div class="meal-meta"><div class="meal-name">Desayuno</div><div class="meal-time">6:30 am</div></div>
+          <div class="meal-kcal">~750 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Changua (leche con huevo y pan)</div><div class="food-note">Típico bogotano</div></td><td>1 plato hondo</td><td><div class="macro-pills"><span class="mpill p">P 22g</span><span class="mpill c">C 35g</span><span class="mpill f">G 16g</span></div></td></tr>
+              <tr><td><div class="food-name">Banano</div></td><td>2 u.</td><td><div class="macro-pills"><span class="mpill p">P 2g</span><span class="mpill c">C 54g</span><span class="mpill f">G 0g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(240,192,64,0.1)">🥜</div>
+          <div class="meal-meta"><div class="meal-name">Media Mañana</div><div class="meal-time">10:00 am</div></div>
+          <div class="meal-kcal">~380 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Mezcla de frutos secos (maní + almendras)</div></td><td>40g</td><td><div class="macro-pills"><span class="mpill p">P 10g</span><span class="mpill c">C 10g</span><span class="mpill f">G 20g</span></div></td></tr>
+              <tr><td><div class="food-name">Yogur natural Alpina</div></td><td>200g</td><td><div class="macro-pills"><span class="mpill p">P 10g</span><span class="mpill c">C 14g</span><span class="mpill f">G 4g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(224,92,58,0.1)">🍽️</div>
+          <div class="meal-meta"><div class="meal-name">Almuerzo</div><div class="meal-time">12:30 pm</div></div>
+          <div class="meal-kcal">~950 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Ajiaco santafereño (pollo + papa criolla + papa pastusa + guasca)</div></td><td>1 plato grande</td><td><div class="macro-pills"><span class="mpill p">P 40g</span><span class="mpill c">C 65g</span><span class="mpill f">G 10g</span></div></td></tr>
+              <tr><td><div class="food-name">Arroz blanco</div></td><td>100g cocido</td><td><div class="macro-pills"><span class="mpill p">P 2g</span><span class="mpill c">C 26g</span><span class="mpill f">G 0g</span></div></td></tr>
+              <tr><td><div class="food-name">Crema de leche (para el ajiaco)</div></td><td>30ml</td><td><div class="macro-pills"><span class="mpill f">G 9g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">⚡</div>
+          <div class="meal-meta"><div class="meal-name">Pre-Entreno</div><div class="meal-time">4:00 pm</div></div>
+          <div class="meal-kcal">~350 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Atún + 2 bananos + pan integral</div></td><td>1 lata + 2 u. + 2 tajadas</td><td><div class="macro-pills"><span class="mpill p">P 42g</span><span class="mpill c">C 68g</span><span class="mpill f">G 3g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.15)">💪</div>
+          <div class="meal-meta"><div class="meal-name">Post-Entreno</div><div class="meal-time">6:30 pm</div></div>
+          <div class="meal-kcal">~400 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Batido de leche, avena, banano y miel</div></td><td>400ml + 50g + 1 banano + 1 cda</td><td><div class="macro-pills"><span class="mpill p">P 20g</span><span class="mpill c">C 78g</span><span class="mpill f">G 13g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(107,143,114,0.15)">🌙</div>
+          <div class="meal-meta"><div class="meal-name">Cena</div><div class="meal-time">8:00 pm</div></div>
+          <div class="meal-kcal">~750 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Pasta con atún y hogao</div></td><td>180g pasta + 1 lata atún</td><td><div class="macro-pills"><span class="mpill p">P 50g</span><span class="mpill c">C 65g</span><span class="mpill f">G 6g</span></div></td></tr>
+              <tr><td><div class="food-name">Aguacate</div></td><td>½ u.</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 6g</span><span class="mpill f">G 12g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DÍA 6 -->
+  <div class="day-panel" id="day-5">
+    <div class="day-header">
+      <div class="day-number">06</div>
+      <div class="day-info">
+        <div class="day-name">Sábado · Descanso activo</div>
+        <div class="day-kcal">~3,050 kcal · Mantenimiento activo</div>
+      </div>
+    </div>
+    <div class="meals-grid">
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">🌅</div>
+          <div class="meal-meta"><div class="meal-name">Desayuno</div><div class="meal-time">7:30 am</div></div>
+          <div class="meal-kcal">~800 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Huevos revueltos con tomate y cebolla</div></td><td>4 u.</td><td><div class="macro-pills"><span class="mpill p">P 24g</span><span class="mpill c">C 4g</span><span class="mpill f">G 20g</span></div></td></tr>
+              <tr><td><div class="food-name">Arepa blanca (Doñarepa/Markarica)</div></td><td>2 u.</td><td><div class="macro-pills"><span class="mpill p">P 4g</span><span class="mpill c">C 44g</span><span class="mpill f">G 2g</span></div></td></tr>
+              <tr><td><div class="food-name">Queso campesino / cuajada</div></td><td>60g</td><td><div class="macro-pills"><span class="mpill p">P 12g</span><span class="mpill c">C 2g</span><span class="mpill f">G 10g</span></div></td></tr>
+              <tr><td><div class="food-name">Jugo de mora con leche</div></td><td>300ml</td><td><div class="macro-pills"><span class="mpill p">P 8g</span><span class="mpill c">C 25g</span><span class="mpill f">G 8g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(240,192,64,0.1)">🥜</div>
+          <div class="meal-meta"><div class="meal-name">Media Mañana</div><div class="meal-time">10:30 am</div></div>
+          <div class="meal-kcal">~300 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Chontaduro con sal y limón</div></td><td>200g</td><td><div class="macro-pills"><span class="mpill p">P 4g</span><span class="mpill c">C 40g</span><span class="mpill f">G 8g</span></div></td></tr>
+              <tr><td><div class="food-name">Maní tostado</div></td><td>30g</td><td><div class="macro-pills"><span class="mpill p">P 7g</span><span class="mpill c">C 6g</span><span class="mpill f">G 14g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(224,92,58,0.1)">🍽️</div>
+          <div class="meal-meta"><div class="meal-name">Almuerzo</div><div class="meal-time">1:00 pm</div></div>
+          <div class="meal-kcal">~1,000 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Sancocho de gallina con papa, yuca y plátano</div></td><td>1 plato grande</td><td><div class="macro-pills"><span class="mpill p">P 45g</span><span class="mpill c">C 80g</span><span class="mpill f">G 15g</span></div></td></tr>
+              <tr><td><div class="food-name">Arroz blanco</div></td><td>150g cocido</td><td><div class="macro-pills"><span class="mpill p">P 3g</span><span class="mpill c">C 38g</span><span class="mpill f">G 0g</span></div></td></tr>
+              <tr><td><div class="food-name">Aguacate</div></td><td>½ u.</td><td><div class="macro-pills"><span class="mpill p">P 1g</span><span class="mpill c">C 6g</span><span class="mpill f">G 12g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(107,143,114,0.15)">🌙</div>
+          <div class="meal-meta"><div class="meal-name">Cena</div><div class="meal-time">7:30 pm</div></div>
+          <div class="meal-kcal">~650 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Arroz con leche (postre nutritivo)</div></td><td>1 taza</td><td><div class="macro-pills"><span class="mpill p">P 8g</span><span class="mpill c">C 55g</span><span class="mpill f">G 8g</span></div></td></tr>
+              <tr><td><div class="food-name">Pollo al horno con verduras</div></td><td>180g</td><td><div class="macro-pills"><span class="mpill p">P 50g</span><span class="mpill c">C 10g</span><span class="mpill f">G 6g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- DÍA 7 -->
+  <div class="day-panel" id="day-6">
+    <div class="day-header">
+      <div class="day-number">07</div>
+      <div class="day-info">
+        <div class="day-name">Domingo · Descanso completo</div>
+        <div class="day-kcal">~3,050 kcal · Recuperación</div>
+      </div>
+    </div>
+    <div class="meals-grid">
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(61,220,104,0.1)">🌅</div>
+          <div class="meal-meta"><div class="meal-name">Desayuno</div><div class="meal-time">8:00 am</div></div>
+          <div class="meal-kcal">~800 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Tamal tolimense / valluno</div><div class="food-note">Con proteína completa</div></td><td>1 u. grande</td><td><div class="macro-pills"><span class="mpill p">P 30g</span><span class="mpill c">C 70g</span><span class="mpill f">G 20g</span></div></td></tr>
+              <tr><td><div class="food-name">Chocolate caliente (Luker o Corona)</div></td><td>300ml leche</td><td><div class="macro-pills"><span class="mpill p">P 10g</span><span class="mpill c">C 28g</span><span class="mpill f">G 12g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(240,192,64,0.1)">🥜</div>
+          <div class="meal-meta"><div class="meal-name">Media Mañana</div><div class="meal-time">10:30 am</div></div>
+          <div class="meal-kcal">~350 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Ensalada de frutas colombianas (mango, papaya, banano, fresa)</div></td><td>300g</td><td><div class="macro-pills"><span class="mpill p">P 3g</span><span class="mpill c">C 60g</span><span class="mpill f">G 1g</span></div></td></tr>
+              <tr><td><div class="food-name">Queso campesino</div></td><td>50g</td><td><div class="macro-pills"><span class="mpill p">P 10g</span><span class="mpill c">C 1g</span><span class="mpill f">G 8g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(224,92,58,0.1)">🍽️</div>
+          <div class="meal-meta"><div class="meal-name">Almuerzo</div><div class="meal-time">1:00 pm</div></div>
+          <div class="meal-kcal">~1,000 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Bandeja paisa completa (arroz, fríjoles, carne, chicharrón, chorizo, huevo, tajada, arepa)</div></td><td>1 plato completo</td><td><div class="macro-pills"><span class="mpill p">P 55g</span><span class="mpill c">C 100g</span><span class="mpill f">G 35g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="meal-card" onclick="toggleMeal(this)">
+        <div class="meal-header">
+          <div class="meal-icon" style="background:rgba(107,143,114,0.15)">🌙</div>
+          <div class="meal-meta"><div class="meal-name">Cena</div><div class="meal-time">7:30 pm</div></div>
+          <div class="meal-kcal">~650 kcal</div><div class="meal-arrow">⌄</div>
+        </div>
+        <div class="meal-body">
+          <table class="foods-table">
+            <thead><tr><th>Alimento</th><th>Cant.</th><th>Macros</th></tr></thead>
+            <tbody>
+              <tr><td><div class="food-name">Sopa de pasta con pollo y verduras</div></td><td>1 tazón</td><td><div class="macro-pills"><span class="mpill p">P 35g</span><span class="mpill c">C 50g</span><span class="mpill f">G 6g</span></div></td></tr>
+              <tr><td><div class="food-name">Pan de molde integral tostado</div></td><td>2 tajadas</td><td><div class="macro-pills"><span class="mpill p">P 6g</span><span class="mpill c">C 30g</span><span class="mpill f">G 2g</span></div></td></tr>
+              <tr><td><div class="food-name">Vaso de leche caliente</div></td><td>250ml</td><td><div class="macro-pills"><span class="mpill p">P 8g</span><span class="mpill c">C 12g</span><span class="mpill f">G 8g</span></div></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIPS -->
+<section>
+  <div class="section-label">Recomendaciones</div>
+  <div class="section-title">Claves del Éxito</div>
+  <div class="tips-grid">
+    <div class="tip-card">
+      <div class="tip-icon">💧</div>
+      <div class="tip-title">Hidratación</div>
+      <div class="tip-text">Mínimo 3 litros de agua al día. En días de entreno añade 500ml extra. El agua de panela fría puede ser opción pre-entreno si no hay suplementos.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">⏰</div>
+      <div class="tip-title">Timing de comidas</div>
+      <div class="tip-text">Come el pre-entreno 60–90 min antes de entrenar. El post-entreno es clave: consúmelo en los primeros 30 min tras finalizar.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🥩</div>
+      <div class="tip-title">Fuentes de proteína</div>
+      <div class="tip-text">Pollo, res magra, atún, huevos y leche son las bases. Busca carnes en Éxito, Jumbo o tu carnicería de confianza. Preferir cortes sin piel.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">📊</div>
+      <div class="tip-title">Progreso esperado</div>
+      <div class="tip-text">Con este plan y entreno 5×/semana puedes esperar ganar 0.5–1 kg de masa magra al mes. Pésate siempre en ayunas, mismo día de la semana.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">🛒</div>
+      <div class="tip-title">Dónde comprar</div>
+      <div class="tip-text">Todos los alimentos los encuentras en Éxito, Jumbo, D1, Ara o tiendas de barrio. Las marcas sugeridas (Alquería, Alpina, Quaker, Doria) son de fácil acceso nacional.</div>
+    </div>
+    <div class="tip-card">
+      <div class="tip-icon">😴</div>
+      <div class="tip-title">Descanso</div>
+      <div class="tip-text">El músculo crece mientras duermes. Apunta a 7–8 horas de sueño. Los sábados y domingos son de recuperación: camina o estira pero sin sobreexigirte.</div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  Plan diseñado por <strong style="color:var(--accent)">KarenFit</strong> · Personalizado para Robinson · 2026<br>
+  <span style="font-size:10px;opacity:0.5;margin-top:6px;display:block">Este plan es de carácter orientativo. Consulta con tu médico ante cualquier condición de salud.</span>
+</footer>
+
+<script>
+  function showDay(index, btn) {
+    document.querySelectorAll('.day-panel').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('day-' + index).classList.add('active');
+    btn.classList.add('active');
+  }
+
+  function toggleMeal(card) {
+    card.classList.toggle('open');
+  }
+
+  // Animate bars on load
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      document.querySelectorAll('.bar-fill').forEach(bar => {
+        const w = bar.style.width;
+        bar.style.width = '0';
+        setTimeout(() => bar.style.width = w, 100);
+      });
+    }, 300);
+  });
+</script>
+
+<!-- BOTÓN WHATSAPP FLOTANTE -->
+<style>
+  .wa-btn {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #25D366;
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 600;
+    padding: 14px 20px 14px 16px;
+    border-radius: 100px;
+    border: none;
+    cursor: pointer;
+    text-decoration: none;
+    box-shadow: 0 4px 24px rgba(37,211,102,0.4);
+    transition: transform 0.2s, box-shadow 0.2s;
+    animation: waPop 0.5s 1s cubic-bezier(.34,1.56,.64,1) both;
+  }
+  .wa-btn:hover {
+    transform: translateY(-3px) scale(1.04);
+    box-shadow: 0 8px 32px rgba(37,211,102,0.55);
+  }
+  .wa-btn svg { width: 22px; height: 22px; flex-shrink: 0; }
+  .wa-pulse {
+    position: absolute;
+    top: -4px; right: -4px;
+    width: 14px; height: 14px;
+    background: #ff3b3b;
+    border-radius: 50%;
+    border: 2px solid #0a0f0d;
+    animation: waPulse 2s infinite;
+  }
+  @keyframes waPop {
+    from { opacity: 0; transform: scale(0.5) translateY(20px); }
+    to   { opacity: 1; transform: scale(1) translateY(0); }
+  }
+  @keyframes waPulse {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50%       { transform: scale(1.3); opacity: 0.7; }
+  }
+  @media (max-width: 600px) {
+    .wa-btn span { display: none; }
+    .wa-btn { padding: 14px; }
+  }
+</style>
+
+<button class="wa-btn" onclick="window.open('https://wa.me/573114579957?text=Hola%20KarenFit%2C%20tengo%20una%20pregunta%20sobre%20mi%20plan%20%F0%9F%92%AA','_blank')">
+  <div class="wa-pulse"></div>
+  <svg viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+    <path d="M16 0C7.163 0 0 7.163 0 16c0 2.833.737 5.49 2.027 7.8L0 32l8.485-2.007A15.93 15.93 0 0016 32c8.837 0 16-7.163 16-16S24.837 0 16 0zm0 29.333a13.27 13.27 0 01-6.773-1.853l-.486-.29-5.04 1.193 1.227-4.893-.317-.504A13.267 13.267 0 012.667 16C2.667 8.636 8.636 2.667 16 2.667S29.333 8.636 29.333 16 23.364 29.333 16 29.333z"/>
+    <path d="M23.2 19.44c-.4-.2-2.347-1.16-2.712-1.293-.363-.133-.627-.2-.89.2-.267.4-1.027 1.293-1.254 1.56-.227.267-.453.3-.853.1-.4-.2-1.687-.62-3.213-1.98-1.187-1.053-1.987-2.353-2.22-2.753-.233-.4-.025-.613.173-.813.18-.18.4-.467.6-.7.2-.233.267-.4.4-.667.133-.267.067-.5-.033-.7-.1-.2-.89-2.147-1.22-2.947-.32-.773-.647-.667-.89-.68-.227-.013-.487-.013-.747-.013-.267 0-.7.1-1.067.5-.367.4-1.4 1.367-1.4 3.333s1.433 3.867 1.633 4.133c.2.267 2.82 4.307 6.827 6.04.953.413 1.697.66 2.277.847.957.307 1.827.263 2.513.16.767-.113 2.36-.96 2.693-1.893.333-.933.333-1.733.233-1.9-.1-.167-.367-.267-.767-.467z"/>
+  </svg>
+  <span>Contactar a KarenFit</span>
+</button>
+
+</body>
+</html>
